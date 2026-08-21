@@ -1,38 +1,96 @@
+"""Send user messages to the Grok API, run tools, and return synthesized answers."""
+
 import json
 import os
+
 from dotenv import load_dotenv
 from openai import OpenAI
-from ai.tools import get_data_df_local, get_data_df_cloud
-from ai.tools import TOOLS
 
+from ai.tools import (
+    TOOLS,
+    get_cluster_profile,
+    get_state_data,
+    rank_states,
+    summarize_priority_group,
+)
 
 load_dotenv()
 
-def agent(messages):
+MAX_TOOL_ROUNDS = 3
 
+TOOL_HANDLERS = {
+    "get_state_data": get_state_data,
+    "rank_states": rank_states,
+    "summarize_priority_group": summarize_priority_group,
+    "get_cluster_profile": get_cluster_profile,
+}
+
+
+def _run_tool(tool_name: str, arguments: dict) -> str:
+    """Execute one tool and return its JSON string result."""
+    handler = TOOL_HANDLERS.get(tool_name)
+    if handler is None:
+        return json.dumps({"error": f"Unknown tool requested: {tool_name}"})
+    return handler(**arguments)
+
+
+def _assistant_tool_message(response) -> dict:
+    """Build an assistant message dict that includes tool calls for the API."""
+    tool_calls = []
+    for tool_call in response.tool_calls:
+        tool_calls.append(
+            {
+                "id": tool_call.id,
+                "type": "function",
+                "function": {
+                    "name": tool_call.function.name,
+                    "arguments": tool_call.function.arguments,
+                },
+            }
+        )
+    return {
+        "role": "assistant",
+        "content": response.content,
+        "tool_calls": tool_calls,
+    }
+
+
+def agent(messages: list[dict]) -> str:
+    """Call the LLM, run tools if needed, and return a natural-language answer."""
     client = OpenAI(
         api_key=os.environ["XAI_API_KEY"],
         base_url="https://api.x.ai/v1",
     )
 
-    completion = client.chat.completions.create(
-        model="grok-3-mini",
-        tools=TOOLS, # here we pass the tools to the LLM
-        messages=messages,
-    )
+    api_messages = [message for message in messages if message["role"] in ("system", "user", "assistant", "tool")]
 
-    # Get the response from the LLM
-    response = completion.choices[0].message
+    for _ in range(MAX_TOOL_ROUNDS):
+        completion = client.chat.completions.create(
+            model="grok-3-mini",
+            tools=TOOLS,
+            messages=api_messages,
+        )
+        response = completion.choices[0].message
 
-    # Parse the response to get the tool call arguments
-    if response.tool_calls:
-        # Process each tool call
+        if not response.tool_calls:
+            return response.content or "I could not generate a response. Please try rephrasing your question."
+
+        api_messages.append(_assistant_tool_message(response))
+
         for tool_call in response.tool_calls:
-            # Get the tool call arguments
-            tool_call_arguments = json.loads(tool_call.function.arguments)
-            if tool_call.function.name == "get_data_df":
-                return get_data_df_cloud(tool_call_arguments["sql_query"])
-                #return get_data_df_local(tool_call_arguments["sql_query"])
-    else:
-        # If there are no tool calls, return the response content
-        return response.content
+            tool_name = tool_call.function.name
+            tool_arguments = json.loads(tool_call.function.arguments or "{}")
+            tool_result = _run_tool(tool_name, tool_arguments)
+            api_messages.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": tool_result,
+                }
+            )
+
+    final_completion = client.chat.completions.create(
+        model="grok-3-mini",
+        messages=api_messages,
+    )
+    return final_completion.choices[0].message.content or "I could not complete the analysis."

@@ -1,10 +1,16 @@
+"""
+Legacy Sakila database helpers.
+
+Not used by the CRIPI agent, which reads from data/climate_resilience_dashboard.csv.
+Kept for reference if you later load the dataset into PostgreSQL.
+"""
+
 import psycopg
 import pymysql
 from dotenv import load_dotenv
 import os
 from sqlalchemy import create_engine
 
-# Load environment variables
 load_dotenv()
 
 # Get the connection string from environment

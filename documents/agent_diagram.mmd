@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant User
+    participant ChatPanel as chat_panel.py
+    participant Agent as agent.py
+    participant Grok as Grok API
+    participant Tools as tools.py
+    participant CSV as climate_resilience_dashboard.csv
+
+    User->>ChatPanel: Question or suggestion chip
+    ChatPanel->>ChatPanel: Greeting? skip API
+    ChatPanel->>Agent: messages + history
+    Agent->>Grok: SYSTEM_PROMPT + tools schema + messages
+
+    alt Analytical question — tool call
+        Grok->>Agent: choose one of 4 tools
+        Note right of Grok: get_state_data<br/>rank_states<br/>summarize_priority_group<br/>get_cluster_profile
+        Agent->>Tools: handler(**args)
+        Tools->>CSV: filter / rank / summarize
+        Tools->>Agent: JSON result
+        Agent->>Grok: tool output (2nd API call)
+        Grok->>Agent: analysis + recommendations
+    else Simple question — no tool
+        Grok->>Agent: natural language
+    end
+
+    Agent->>ChatPanel: markdown answer
+    ChatPanel->>User: chat message

@@ -26,6 +26,7 @@ openai==2.9.0
 packaging==25.0
 pandas==2.3.3
 pillow==12.0.0
+plotly==6.0.1
 protobuf==6.33.2
 psycopg[binary]==3.3.2
 pyarrow==22.0.0
