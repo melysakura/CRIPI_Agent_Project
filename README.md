@@ -92,10 +92,7 @@ Separate chat histories per page (`priorities` / `clusters`). See `ai/agent.py` 
 |----------|-------------|
 | `documents/project_design.md` | Research question, IPCC framework, methodology |
 | `documents/agent_plan.md` | Product plan, wireframes, implementation status |
-| `documents/presentation.md` | 5-slide deck copy (tools, diagrams, demo script) |
-| `documents/presentation_addendum.md` | Changes after the bootcamp presentation (agent upgrade) |
 | `documents/indicator_selection.md` | Indicator rationale and sources |
-| `Developer_Guide.ipynb` | Bootcamp agent development guide (template origin) |
 
 ## Implementation status
 

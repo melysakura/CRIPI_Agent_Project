@@ -531,7 +531,7 @@ Grouped bar of the **4 dimension index means** per cluster vs national mean — 
 
 ~~Sortable table of all states~~ — **Removed from UI** (not needed for executive/analyst flow; state detail available on CRIPI Dashboard).
 
-Component retained in codebase as `components/cluster_membership_table.py` for optional future use.
+Component removed from Page 2 UI; cluster membership is shown via the cluster selector chips and PCA map.
 
 ---
 

@@ -169,3 +169,20 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# --- Project-specific ---
+.DS_Store
+Thumbs.db
+
+# Cursor / IDE
+.cursor/
+.idea/
+.vscode/
+
+# Streamlit local secrets (use Streamlit Cloud secrets when deployed)
+.streamlit/secrets.toml
+
+# Credentials (never commit)
+*.pem
+credentials.json
+secrets.toml
