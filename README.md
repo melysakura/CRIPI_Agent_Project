@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 2. **Configure environment**
 
-Copy `.env.sample` to `.env` and add your xAI API key:
+Copy `.env.sample` to `.env` and add your OpenAI API key:
 
 ```bash
 cp .env.sample .env
@@ -69,12 +69,12 @@ See `documents/project_design.md` and `documents/agent_plan.md` for full methodo
 
 ## AI assistant
 
-The chat panel lives on its own sidebar page (**CRIPI Assistant**) so users can explore charts and ask questions side by side. It uses the **Grok API** (`XAI_API_KEY`).
+The chat panel lives on its own sidebar page (**CRIPI Assistant**) so users can explore charts and ask questions side by side. It uses the **OpenAI API** (`OPENAI_API_KEY`).
 
 **How it works:**
 1. User asks a question; greetings are answered locally (no API call).
-2. Grok may call one or more **tools** that query the same CSV as the dashboard.
-3. Tool results are returned as JSON; Grok then writes a **natural-language answer** with analysis and, when relevant, **actionable recommendations**.
+2. The model may call one or more **tools** that query the same CSV as the dashboard.
+3. Tool results are returned as JSON; the model then writes a **natural-language answer** with analysis and, when relevant, **actionable recommendations**.
 4. Replies render as markdown in the chat (bullets, small tables).
 
 **Tools** (`ai/tools.py`):
@@ -102,13 +102,14 @@ Separate chat history on the assistant page (`messages_assistant`). See `ai/agen
 4. Open **Advanced settings → Secrets** and add:
 
 ```toml
-XAI_API_KEY = "your-xai-api-key"
+OPENAI_API_KEY = "your-openai-api-key"
 ```
 
 5. Deploy, then verify all four sidebar pages load and one assistant question returns an answer.
 
 **Notes**
-- Charts and maps work without the API key; only the **CRIPI Assistant** page needs `XAI_API_KEY`.
+- Charts and maps work without the API key; only the **CRIPI Assistant** page needs `OPENAI_API_KEY`.
+- Default model is `gpt-4o-mini`. Override with `OPENAI_MODEL` in secrets or `.env` if needed.
 - The app has no login — anyone with the URL can use the chat and consume API credits. Share the link only with intended viewers.
 - After code changes, redeploy from the Streamlit Cloud dashboard or push to `main` if auto-deploy is enabled.
 
@@ -122,7 +123,7 @@ XAI_API_KEY = "your-xai-api-key"
 
 ## Implementation status
 
-- **Phase 1 (AI agent):** Complete — CSV tools, Grok agent, system prompt, schema, glossary
+- **Phase 1 (AI agent):** Complete — CSV tools, OpenAI agent, system prompt, schema, glossary
 - **Phase A (CRIPI Dashboard):** Complete
 - **Phase B (State Clusters):** Complete
 - **Phase C (Chat synthesis):** Complete — two-step tool loop, analytical tools, markdown replies
