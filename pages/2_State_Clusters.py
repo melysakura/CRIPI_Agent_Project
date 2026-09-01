@@ -1,4 +1,4 @@
-"""State Clustering Analysis page — PCA scatter, cluster profiles, and AI assistant."""
+"""State Clustering Analysis page — PCA scatter and cluster profiles."""
 
 import streamlit as st
 
@@ -8,23 +8,11 @@ from components.charts.cluster_indicator_profile import render_cluster_indicator
 from components.charts.cluster_priority_crosstab import render_cluster_priority_crosstab
 from components.charts.cluster_scatter import render_cluster_scatter
 from components.cluster_utils import CLUSTER_SUMMARIES, cluster_member_states
-from components.chat_panel import init_chat_session, render_chat_panel
 from components.page_style import apply_page_style
 from components.theme import CLUSTER_COLORS
 
-AGENT_VERSION = "cripi-dashboard-v8"
+AGENT_VERSION = "cripi-dashboard-v11"
 CLUSTER_OPTIONS = [1, 2, 3, 4]
-
-CHAT_SUGGESTIONS = [
-    "Which states belong to Cluster 1 and what do they have in common?",
-    "What makes Cluster 1 distinctive compared to the national average?",
-    "What interventions would you recommend for Cluster 1?",
-]
-
-WELCOME_MESSAGE = (
-    "Hi there! I can help you interpret K-Means clusters, compare vulnerability profiles, "
-    "and relate clustering patterns to CRIPI investment priorities."
-)
 
 if st.session_state.get("agent_version") != AGENT_VERSION:
     st.session_state.clear()
@@ -106,14 +94,3 @@ render_cluster_indicator_profile(df, selected_cluster)
 st.subheader("🔀 Clusters vs investment priority")
 st.caption("Shows that machine-learning clusters and CRIPI categories are related but not identical.")
 render_cluster_priority_crosstab(df)
-
-init_chat_session(
-    page_key="clusters",
-    welcome_message=WELCOME_MESSAGE,
-    suggestions=CHAT_SUGGESTIONS,
-)
-render_chat_panel(
-    "clusters",
-    CHAT_SUGGESTIONS,
-    input_placeholder="Ask about clusters, similarity between states, or indicator profiles",
-)

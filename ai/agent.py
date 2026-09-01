@@ -18,6 +18,11 @@ load_dotenv()
 
 MAX_TOOL_ROUNDS = 3
 
+MISSING_API_KEY_MESSAGE = (
+    "The CRIPI Assistant is not available because no API key is configured. "
+    "Add `XAI_API_KEY` in Streamlit Cloud secrets or in a local `.env` file."
+)
+
 TOOL_HANDLERS = {
     "get_state_data": get_state_data,
     "rank_states": rank_states,
@@ -55,10 +60,28 @@ def _assistant_tool_message(response) -> dict:
     }
 
 
+def _get_api_key() -> str | None:
+    """Read the xAI API key from the environment or Streamlit secrets."""
+    api_key = os.environ.get("XAI_API_KEY")
+    if api_key:
+        return api_key
+
+    try:
+        import streamlit as st
+
+        return st.secrets.get("XAI_API_KEY")
+    except Exception:
+        return None
+
+
 def agent(messages: list[dict]) -> str:
     """Call the LLM, run tools if needed, and return a natural-language answer."""
+    api_key = _get_api_key()
+    if not api_key:
+        return MISSING_API_KEY_MESSAGE
+
     client = OpenAI(
-        api_key=os.environ["XAI_API_KEY"],
+        api_key=api_key,
         base_url="https://api.x.ai/v1",
     )
 

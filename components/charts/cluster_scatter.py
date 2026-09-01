@@ -43,7 +43,7 @@ def render_cluster_scatter(df: pd.DataFrame, selected_cluster: int, color_mode: 
             "sensitivity_dimension_index",
             "adaptive_capacity_dimension_index",
         ],
-        labels={"pc1": pc1_label, "pc2": pc2_label, color_column: "Group"},
+        labels={"pc1": pc1_label, "pc2": pc2_label, color_column: ""},
     )
 
     fig.update_traces(
@@ -96,7 +96,7 @@ def render_cluster_scatter(df: pd.DataFrame, selected_cluster: int, color_mode: 
     apply_chart_theme(fig, height=520)
     fig.update_layout(
         title="State positions in vulnerability space (PCA on 4 dimension indices)",
-        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "x": 0},
+        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "x": 0, "title": {"text": ""}},
         margin={"t": 70, "b": 20, "l": 20, "r": 20},
     )
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})

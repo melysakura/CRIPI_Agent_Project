@@ -4,6 +4,12 @@ import streamlit as st
 
 from components.page_style import apply_page_style
 
+AGENT_VERSION = "cripi-dashboard-v11"
+
+if st.session_state.get("agent_version") != AGENT_VERSION:
+    st.session_state.clear()
+    st.session_state["agent_version"] = AGENT_VERSION
+
 apply_page_style()
 
 st.markdown(
@@ -118,16 +124,19 @@ st.subheader("🧭 How to navigate the app")
 st.markdown(
     """
     <div class="intro-panel">
-        Use the sidebar to move between the three views:
+        Use the sidebar to move between the four views:
         <ul>
             <li><strong>📊 CRIPI Dashboard</strong> — national KPIs, Mexico map, state or national indicator
             profiles, dimension rankings, and priority group comparisons.</li>
             <li><strong>🧩 State Clusters</strong> — PCA cluster map, cluster dimension profiles,
             indicator deltas, and clusters vs. investment priority analysis.</li>
+            <li><strong>💬 CRIPI Assistant</strong> — ask questions about priorities, indicators, and clusters
+            while you explore the data in the other pages.</li>
             <li><strong>📘 CRIPI Explained</strong> — this overview page.</li>
         </ul>
-        Start with the <strong>CRIPI Dashboard</strong> for the national picture, then use
-        <strong>State Clusters</strong> to explore shared vulnerability profiles across states.
+        Start with the <strong>CRIPI Dashboard</strong> for the national picture, use
+        <strong>State Clusters</strong> for shared vulnerability profiles, and open
+        <strong>CRIPI Assistant</strong> whenever you want a data-grounded explanation or recommendation.
     </div>
     """,
     unsafe_allow_html=True,

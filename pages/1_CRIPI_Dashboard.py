@@ -1,4 +1,4 @@
-"""Main dashboard page: CRIPI overview, map, charts, and AI assistant."""
+"""Main dashboard page: CRIPI overview, map, and charts."""
 
 import streamlit as st
 
@@ -6,24 +6,12 @@ from ai.data_loader import load_cripi_data
 from components.charts.dimension_rankings import render_dimension_rankings
 from components.charts.mexico_map import render_mexico_map
 from components.charts.priority_gap import render_priority_gap_chart
-from components.chat_panel import init_chat_session, render_chat_panel
 from components.kpi_cards import render_kpi_cards
 from components.page_style import apply_page_style
 from components.state_sidebar import render_national_profile, render_state_profile
 
-AGENT_VERSION = "cripi-dashboard-v8"
+AGENT_VERSION = "cripi-dashboard-v11"
 ALL_STATES_OPTION = "All states"
-
-CHAT_SUGGESTIONS = [
-    "Why is Chiapas ranked first?",
-    "Why are Very High Priority states similar?",
-    "What investments would you recommend for Chiapas?",
-]
-
-WELCOME_MESSAGE = (
-    "Hi there! I can help you interpret the Climate Resilience Investment Priority Index "
-    "(CRIPI) and related indicators for Mexico's states."
-)
 
 if st.session_state.get("agent_version") != AGENT_VERSION:
     st.session_state.clear()
@@ -75,10 +63,3 @@ render_dimension_rankings(df)
 
 st.subheader("⚖️ Priority group comparison")
 render_priority_gap_chart(df)
-
-init_chat_session(
-    page_key="priorities",
-    welcome_message=WELCOME_MESSAGE,
-    suggestions=CHAT_SUGGESTIONS,
-)
-render_chat_panel("priorities", CHAT_SUGGESTIONS)
